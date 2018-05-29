@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    canvas {
+      border: 1px solid black
+    }
+  </style>
+</head>
+<body>
+  <canvas id="tutorial" width="500" height="500"></canvas>
+  <span id="position"></span>
+</body>
+<script>
+  let canvas = document.getElementById('tutorial')
+      readout = document.getElementById('position')
+      if (canvas.getContext) {
+        let ctx = canvas.getContext('2d')
+
+        ctx.fillStyle = 'rgb(200, 0, 0)'
+        ctx.fillRect(10, 10, 55, 50)
+
+        ctx.fillStyle = 'rgba(0, 0, 200, 0.5)'
+        ctx.fillRect(30, 30, 55, 50)
+
+        ctx.fillStyle = 'blue'
+        ctx.beginPath()
+        ctx.moveTo(100, 50)
+        ctx.lineTo(130, 75)
+        ctx.lineTo(130, 25)
+        ctx.fill()
+
+        let windowToCanvas = (canvas, x, y) => {
+          let canvasBox = canvas.getBoundingClientRect()
+          return {
+            x: x - canvasBox.left * (canvas.width / canvasBox.width),
+            y: y - canvasBox.top * (canvas.height / canvasBox.height)
+          }
+        }
+
+        // canvas.onmousemove = (e) => {
+        //   let loc = windowToCanvas(canvas, e.clientX, e.clientY)
+        //   document.getElementById('position').innerHTML = '鼠标在canvas上的实时坐标:' + loc.x + ',' + loc.y
+        // }
+
+        // 画背景
+        let drawBackground = () => {
+          let VERTICAL_LINE_SPACING = 12
+              i = ctx.canvas.height
+
+          ctx.clearRect(0, 0, canvas.width, canvas.height)
+          ctx.strokeStyle = 'lightgray'
+          ctx.lineWidth = 0.5
+
+          while (i > VERTICAL_LINE_SPACING * 4) {
+            ctx.beginPath()
+            ctx.moveTo(0, i)
+            ctx.lineTo(ctx.canvas.width, i)
+            ctx.stroke()
+            i -= VERTICAL_LINE_SPACING
+          }
+        }
+
+        let drawGuideLines = (x, y) => {
+          ctx.strokeStyle = 'rgba(0, 0, 230, 0.8)'
+          ctx.lineWidth = 0.5
+          drawVerticalLine(x)
+          drawHorizontalLine(y)
+        }
+        
+        let updateReadout = (x, y) => {
+          readout.innerText = '(' + x.toFixed(0) + ',' + y.toFixed(0) + ')'
+        }
+
+        let drawHorizontalLine = (y) => {
+          ctx.beginPath()
+          ctx.moveTo(0, y + 0.5)
+          ctx.lineTo(ctx.canvas.width, y + 0.5)
+          ctx.stroke()
+        }
+
+        let drawVerticalLine = (x) => {
+          ctx.beginPath()
+          ctx.moveTo(x + 0.5, 0)
+          ctx.lineTo(x + 0.5, ctx.canvas.height)
+          ctx.stroke()
+        }
+
+        // Event handlers
+
+        canvas.onmousemove = (e) => {
+          let loc = windowToCanvas(canvas, e.clientX, e.clientY)
+          drawBackground()
+          drawGuideLines(loc.x, loc.y)
+          updateReadout(loc.x, loc.y)
+        }
+
+        drawBackground()
+      }
+</script>
+</html>
